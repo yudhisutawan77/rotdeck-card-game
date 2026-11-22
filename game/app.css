@@ -1,0 +1,135 @@
+/* ROTDECK — a dark green felt table, bone-white cards, suits by colour AND glyph. */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body {
+  background: #0d2b1a radial-gradient(ellipse at 50% 30%, #17452c 0%, #0d2b1a 65%, #071a10 100%);
+  color: #f2ead8;
+  font-family: Georgia, 'Times New Roman', serif;
+  overflow: hidden;
+}
+#app { width: 1280px; height: 720px; margin: 0 auto; padding: 14px 20px; }
+body.shot * { transition: none !important; animation: none !important; }
+
+/* ---------- shared ---------- */
+.hint { text-align: center; color: #b9c9b2; font-size: 14px; margin-top: 6px; font-style: italic; }
+.big-btn {
+  display: block; margin: 22px auto 0; padding: 16px 34px;
+  font-family: Georgia, serif; font-size: 22px; font-weight: bold; letter-spacing: 1px;
+  color: #1a1206; background: linear-gradient(#ffd76a, #e0a92c);
+  border: 3px solid #fff3c4; border-radius: 12px; cursor: pointer;
+  box-shadow: 0 4px 0 #8a6d1a, 0 8px 22px rgba(0,0,0,.5);
+}
+.big-btn:hover { filter: brightness(1.08); }
+.big-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 #8a6d1a; }
+
+/* ---------- title ---------- */
+.title-screen { text-align: center; padding-top: 26px; }
+.eyebrow { letter-spacing: 4px; font-size: 15px; color: #d8c98a; }
+.game-title {
+  font-size: 110px; line-height: 1; letter-spacing: 10px; color: #ffd76a;
+  text-shadow: 0 0 30px rgba(255, 190, 60, .45), 0 4px 0 #6d4e05, 0 8px 24px rgba(0,0,0,.6);
+  margin: 10px 0 14px;
+}
+.tagline { font-size: 22px; color: #f2ead8; }
+.tagline2 { font-size: 17px; color: #c8d8c0; font-style: italic; margin-top: 4px; }
+.title-rules { display: flex; justify-content: center; gap: 26px; margin-top: 26px; }
+.rule-row { background: rgba(0,0,0,.28); border: 1px solid #3d6b4a; border-radius: 10px; padding: 10px 14px; font-size: 15px; }
+.rule-suit { font-weight: bold; margin-right: 8px; }
+.mechanics { display: flex; justify-content: center; gap: 14px; margin-top: 18px; flex-wrap: wrap; }
+.mech {
+  background: #12351f; border: 2px solid #d8c98a; border-radius: 10px;
+  padding: 10px 14px; font-size: 15px; color: #ffe9a8; max-width: 340px;
+}
+
+/* ---------- table ---------- */
+.table { display: flex; flex-direction: column; height: 100%; }
+.foe-row, .player-row { display: flex; align-items: center; gap: 18px; }
+.foe-row { border-bottom: 2px solid rgba(255,255,255,.12); padding-bottom: 8px; }
+.life { width: 250px; flex: none; }
+.life-name { font-size: 17px; font-weight: bold; letter-spacing: 2px; color: #ffd76a; }
+.bar { height: 18px; background: #04120a; border: 2px solid #f2ead8; border-radius: 9px; overflow: hidden; margin: 4px 0; }
+.bar-fill { height: 100%; background: linear-gradient(90deg, #37c978, #7be495); transition: width .3s; }
+.bar-fill.low { background: linear-gradient(90deg, #d43d2a, #ff7a5c); }
+.life-nums { font-size: 16px; font-weight: bold; }
+.shield { color: #8ec9ff; margin-left: 8px; }
+.foe-hand { display: flex; gap: 6px; align-items: center; }
+.foe-count { font-size: 14px; color: #b9c9b2; margin-left: 10px; }
+.mid-row { display: flex; gap: 16px; align-items: stretch; margin: 10px 0; }
+.log {
+  flex: 1; background: rgba(0,0,0,.35); border: 1px solid #3d6b4a; border-radius: 10px;
+  padding: 8px 12px; min-height: 108px; font-size: 14.5px; line-height: 1.45;
+}
+.log-title { font-size: 12px; letter-spacing: 3px; color: #d8c98a; margin-bottom: 4px; }
+.log-line { color: #e8e2cc; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.end-btn {
+  flex: none; width: 170px; font-family: Georgia, serif; font-size: 20px; font-weight: bold;
+  color: #1a1206; background: linear-gradient(#ffd76a, #e0a92c);
+  border: 3px solid #fff3c4; border-radius: 12px; cursor: pointer;
+}
+.end-btn:hover { filter: brightness(1.08); }
+.hud { display: flex; gap: 10px; margin-left: auto; }
+.chip { background: rgba(0,0,0,.35); border: 1px solid #3d6b4a; border-radius: 8px; padding: 6px 10px; text-align: center; min-width: 74px; }
+.chip-label { display: block; font-size: 10.5px; letter-spacing: 2px; color: #b9c9b2; }
+.chip-value { display: block; font-size: 18px; font-weight: bold; color: #ffd76a; }
+.hand-row { display: flex; gap: 12px; justify-content: center; margin-top: 8px; }
+.empty-hand { color: #b9c9b2; font-style: italic; padding: 40px; }
+
+/* ---------- cards ---------- */
+.card {
+  --suit: #d43d2a; --suit-dark: #8f1d12; --suit-bg: #fde8e4;
+  width: 148px; height: 212px; flex: none; position: relative;
+  background: linear-gradient(160deg, #fffdf6, #f3ead2);
+  color: #241a08; border: 3px solid var(--suit); border-radius: 12px;
+  padding: 8px 10px; box-shadow: 0 6px 14px rgba(0,0,0,.55);
+  transition: transform .15s, box-shadow .15s;
+}
+.card.playable { cursor: pointer; }
+.card.playable:hover { transform: translateY(-12px) scale(1.03); box-shadow: 0 14px 22px rgba(0,0,0,.6); }
+.card:not(.playable) { opacity: .62; }
+.card-head { display: flex; justify-content: space-between; align-items: center; }
+.cost {
+  background: var(--suit); color: #fff; font-weight: bold; font-size: 15px;
+  border-radius: 20px; padding: 2px 9px;
+}
+.suit-glyph { font-size: 30px; color: var(--suit); line-height: 1; }
+.card-name { font-size: 16.5px; font-weight: bold; margin-top: 4px; line-height: 1.1; min-height: 36px; }
+.card-kind {
+  display: inline-block; font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--suit-dark); border: 1px solid var(--suit); border-radius: 6px; padding: 1px 6px; margin-top: 2px;
+}
+.card-power { font-size: 52px; font-weight: bold; text-align: center; color: var(--suit-dark); line-height: 1.05; margin-top: 2px; }
+.card-power .power-old { text-decoration: line-through; opacity: .55; font-size: 30px; }
+.card-effect { text-align: center; font-size: 13.5px; font-weight: bold; color: #3a2c10; }
+.card-text { font-size: 12px; font-style: italic; color: #6b5a35; text-align: center; margin-top: 4px; line-height: 1.25; }
+.rot-label {
+  position: absolute; left: 50%; bottom: 8px; transform: translateX(-50%) rotate(-4deg);
+  background: #1e4d2b; color: #a8e6b0; font-size: 12px; font-weight: bold; letter-spacing: 1px;
+  padding: 2px 8px; border-radius: 6px; white-space: nowrap;
+}
+.card.rotted { background: linear-gradient(160deg, #eef3d8, #dfe8c0); padding-bottom: 30px; }
+.card.rotted .card-text { display: none; } /* the ROT badge takes the flavour line's place */
+.card.rotted::after {
+  content: ''; position: absolute; inset: 0; border-radius: 9px; pointer-events: none;
+  background: radial-gradient(circle at 85% 15%, rgba(46,125,50,.28) 0 8px, transparent 9px),
+    radial-gradient(circle at 12% 78%, rgba(46,125,50,.25) 0 10px, transparent 11px),
+    radial-gradient(circle at 70% 88%, rgba(46,125,50,.2) 0 6px, transparent 7px);
+}
+.card-key { position: absolute; right: 8px; bottom: 6px; font-size: 11px; color: #8a7a55; }
+.card-back {
+  width: 62px; height: 88px; background: linear-gradient(160deg, #3a2b12, #1e1506);
+  border: 2px solid #8a6d1a; display: flex; flex-direction: column; align-items: center; justify-content: center;
+}
+.back-glyph { font-size: 26px; color: #ffd76a; }
+.back-word { font-size: 9px; letter-spacing: 2px; color: #d8c98a; }
+
+/* ---------- end screens ---------- */
+.end-screen { text-align: center; padding-top: 60px; }
+.end-title { font-size: 64px; letter-spacing: 3px; }
+.end-screen.win .end-title { color: #ffd76a; text-shadow: 0 0 30px rgba(255,190,60,.5); }
+.end-screen.loss .end-title { color: #ff8a7a; text-shadow: 0 0 30px rgba(212,61,42,.5); }
+.end-sub { font-size: 19px; font-style: italic; color: #d8d2ba; margin-top: 8px; }
+.end-stats { width: 460px; margin: 28px auto 0; background: rgba(0,0,0,.35); border: 1px solid #3d6b4a; border-radius: 12px; padding: 14px 20px; }
+.stat-row { display: flex; justify-content: space-between; font-size: 17px; padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,.08); }
+.stat-row:last-child { border-bottom: none; }
+.stat-label { color: #b9c9b2; }
+.stat-value { font-weight: bold; color: #ffd76a; }
